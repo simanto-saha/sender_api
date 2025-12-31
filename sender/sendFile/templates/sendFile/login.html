@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1 style="text-align: center;"> Login your account </h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <label for="username" style="align-items: center;"> Username </label>
+        <input type="text" name="username" style="align-items: center;">
+        <br><br>
+        <label for="password" style="align-items: center;"> Password </label>
+        <input type="password" name="password" style="align-items: center;">
+        <br><br>
+
+        <button type="submit"> Log in </button>
+    </form>
+    
+    <div>
+        <a href="{% url 'signup' %}">signup</a>
+    </div>
+
+</body>
+</html>

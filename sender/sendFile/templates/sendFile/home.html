@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    {% if user.is_authenticated %}
+    <h2>Welcome {{ user.username }}</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="file"> File </label>
+        <input type="file" name="file">
+        <button type="submit">Upload</button>
+    </form>
+    <div>
+        {% for fie in show_file %}
+            {% if fie.file %}
+                <p>{{ fie.file.name }} - <a href="{{ fie.file.url }}" target="_blank">View</a></p>
+            {% else %}
+                <p>No file uploaded.</p>
+            {% endif %}
+        {% empty %}
+            <p>No files uploaded yet.</p>
+        {% endfor %}
+
+    {% else %}
+    <h2>Welcome sign in your account </h2>
+    <a href="{% url 'view_login' %}">Login</a>
+    {% endif %}
+
+    
+    <form action="{% url 'view_logout' %}" method="post">
+        {% csrf_token %}
+    <button type="submit">Logout</button>
+</form>
+</body>
+</html>
