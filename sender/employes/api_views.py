@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from django.http import Http404
 
 
-
+#class Base api
 class Employes_list(APIView):
 
     def get(self, request):
@@ -24,8 +24,11 @@ class Employes_list(APIView):
         else:
             return Response(serialzer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-class Employes_details(APIView):
 
+        
+class Employes_details(APIView):
+    
+    #First fetch the data using function
     def get_object(self, pk):
         try:
             return Employes.objects.get(pk=pk)
