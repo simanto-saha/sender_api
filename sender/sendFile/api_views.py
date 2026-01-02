@@ -13,7 +13,6 @@ def userdetails_list(request):
         # get all the data 
         userDetail = Userdetails.objects.all()
         serializer = UserdetailsSerializer(userDetail, many=True)
-
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     elif request.method == 'POST':

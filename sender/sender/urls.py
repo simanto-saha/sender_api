@@ -21,7 +21,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('sendFile.urls')),
+    path('sendfile/', include('sendFile.urls')), #name is just for practice
+    path('', include('employes.urls')),
     
 ] 
 

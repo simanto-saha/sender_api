@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'sendFile',
     'rest_framework',
+    'employes',
+
 ]
 
 MIDDLEWARE = [
