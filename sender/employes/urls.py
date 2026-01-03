@@ -3,7 +3,7 @@ from . import api_views
 
 
 urlpatterns = [
-    path('api/employes/', api_views.Employes_list.as_view()),
-    path('api/employes/<int:pk>/', api_views.Employes_details.as_view()),
+    path('api/v1/employes/', api_views.Employes_list.as_view()),
+    path('api/v2/employes/', api_views.Employes_details.as_view()),
     
 ]

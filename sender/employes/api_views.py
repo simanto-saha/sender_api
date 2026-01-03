@@ -1,4 +1,4 @@
-from .models import Employes
+from .models import Employes, APIKey
 from .serializers import EmployesSerializer
 from rest_framework.response import Response
 from rest_framework import status
@@ -27,9 +27,40 @@ class Employes_list(APIView):
 
         
 class Employes_details(APIView):
+
+    def get(self, request):
+
+        # Query 
+        employe_id = request.query_params.get('id')
+        api_key = request.query_params.get('appid')
+
+        # Validate id
+        if not employe_id:
+            return Response({"error": "Employe ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        #validate api_key
+        if not api_key:
+            return Response({"error": "API Key is required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # check api_key validity
+        try:
+            api_key_obj = APIKey.objects.get(key=api_key, is_active=True)
+        except APIKey.DoesNotExist:
+            return Response({"error": "Invalid or inactive API Key."}, status=status.HTTP_403_FORBIDDEN)
+        
+        # Fetch employe details
+        try:
+            employe = Employes.objects.get(emp_id=employe_id)
+        except Employes.DoesNotExist:
+            return Response({"error": "Employe not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Serialize and return data
+
+        serializer = EmployesSerializer(employe)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     #First fetch the data using function
-    def get_object(self, pk):
+    """def get_object(self, pk):
         try:
             return Employes.objects.get(pk=pk)
         except Employes.DoesNotExist:
@@ -55,4 +86,4 @@ class Employes_details(APIView):
 
         employe = self.get_object(pk)
         employe.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)"""

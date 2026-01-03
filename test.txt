@@ -1,0 +1,49 @@
+# api_views.py
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Employee, APIKey
+from .serializers import EmployeeSerializer
+
+class Employes_details(APIView):
+    
+    def get(self, request):
+        # Query parameters নিন
+        employee_id = request.query_params.get('id')
+        api_key = request.query_params.get('appid')
+        
+        # Validate: ID আছে কিনা
+        if not employee_id:
+            return Response(
+                {'error': 'ID parameter is required. Usage: ?id=2&appid=YOUR_KEY'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Validate: API key আছে কিনা
+        if not api_key:
+            return Response(
+                {'error': 'API key (appid) is required. Usage: ?id=2&appid=YOUR_KEY'}, 
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        # Validate: API key valid কিনা
+        try:
+            api_key_obj = APIKey.objects.get(key=api_key, is_active=True)
+        except APIKey.DoesNotExist:
+            return Response(
+                {'error': 'Invalid or inactive API key'}, 
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        # Employee খুঁজুন
+        try:
+            employee = Employee.objects.get(id=employee_id)
+        except Employee.DoesNotExist:
+            return Response(
+                {'error': f'Employee with ID {employee_id} not found'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # Data serialize করে return করুন
+        serializer = EmployeeSerializer(employee)
+        return Response(serializer.data, status=status.HTTP_200_OK)
