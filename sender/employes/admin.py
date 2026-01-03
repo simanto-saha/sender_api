@@ -21,7 +21,6 @@ class APIKeyAdmin(admin.ModelAdmin):
     )
     
     def display_key(self, obj):
-        """List view তে partial key দেখাবে"""
         return format_html(
             '<code style="background: #f4f4f4; padding: 5px;">{}</code>',
             f"{obj.key[:15]}...{obj.key[-5:]}"
@@ -29,7 +28,6 @@ class APIKeyAdmin(admin.ModelAdmin):
     display_key.short_description = 'API Key'
     
     def display_full_key(self, obj):
-        """Detail view তে full key দেখাবে"""
         if obj.key:
             return format_html(
                 '<div>'
@@ -42,12 +40,11 @@ class APIKeyAdmin(admin.ModelAdmin):
     display_full_key.short_description = 'Full API Key'
     
     def save_model(self, request, obj, form, change):
-        """Save করার সময় message দেখাবে"""
         super().save_model(request, obj, form, change)
-        if not change:  # নতুন key হলে
+        if not change:  
             self.message_user(
                 request,
-                f'✅ API Key "{obj.name}" successfully created! Key: {obj.key}'
+                f' API Key "{obj.name}" successfully created! Key: {obj.key}'
             )
 
 

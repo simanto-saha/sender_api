@@ -2,6 +2,8 @@ import secrets
 from django.db import models
 from django.contrib.auth.models import User
 
+
+#Automethic Generate API key 
 class APIKey(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='api_keys')
     key = models.CharField(max_length=64, unique=True, editable=False)
