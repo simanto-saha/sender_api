@@ -26,7 +26,8 @@ class Employes_list(APIView):
             return Response(serialzer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 
-        
+
+#api class      
 class Employes_details(APIView):
 
     def get(self, request):
