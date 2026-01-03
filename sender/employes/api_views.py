@@ -1,5 +1,6 @@
 from .models import Employes, APIKey
-from .serializers import EmployesSerializer
+from sendFile.models import Userdetails
+from .serializers import EmployesSerializer, Userdetailsserializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -29,43 +30,57 @@ class Employes_list(APIView):
 class Employes_details(APIView):
 
     def get(self, request):
-
         # Query 
         employe_id = request.query_params.get('id')
         api_key = request.query_params.get('appid')
 
-        #only 3 epmloy can show 
-        if int(employe_id) <= 3:
-
-            # Validate id
-            if not employe_id:
-                return Response({"error": "Employe ID is required."}, status=status.HTTP_400_BAD_REQUEST)
-            
-            #validate api_key
-            if not api_key:
-                return Response({"error": "API Key is required."}, status=status.HTTP_400_BAD_REQUEST)
-            
-            # check api_key validity
-            try:
-                api_key_obj = APIKey.objects.get(key=api_key, is_active=True)
-            except APIKey.DoesNotExist:
-                return Response({"error": "Invalid or inactive API Key."}, status=status.HTTP_403_FORBIDDEN)
-            
-            # Fetch employe details
-            try:
-                employe = Employes.objects.get(emp_id=employe_id)
-            except Employes.DoesNotExist:
-                return Response({"error": "Employe not found."}, status=status.HTTP_404_NOT_FOUND)
-            
-            # Serialize and return data
-
-            serializer = EmployesSerializer(employe)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        # Validate id first
+        if not employe_id:
+            return Response({"error": "Employe ID is required."}, status=status.HTTP_400_BAD_REQUEST)
         
-        else:
-            return Response({"error": "You are not athorised"})
+        # Validate api_key
+        if not api_key:
+            return Response({"error": "API Key is required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Convert to int safely
+        try:
+            employe_id = int(employe_id)
+        except ValueError:
+            return Response({"error": "Invalid Employee ID format."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Only 3 employees can show
+        #if employe_id > 3:
+            #return Response({"error": "You are not authorised"}, status=status.HTTP_403_FORBIDDEN)
+        
+        # Check api_key valid
+        try:
+            api_key_obj = APIKey.objects.get(key=api_key, is_active=True)
+        except APIKey.DoesNotExist:
+            return Response({"error": "Invalid or inactive API Key."}, status=status.HTTP_403_FORBIDDEN)
+        
+        # Fetch employe details
+        try:
+            employe = Employes.objects.get(emp_id=employe_id)
+            user = Userdetails.objects.filter(user=employe_id).first()  # Changed here
+            
+            if not user:
+                return Response({"error": "User details not found."}, status=status.HTTP_404_NOT_FOUND)
+                
+        except Employes.DoesNotExist:
+            return Response({"error": "Employe not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Serialize and return data
+        serializer = EmployesSerializer(employe)
+        serializer2 = Userdetailsserializer(user, context={'request': request})
 
+        combined_data = {
+            "employes": serializer.data,
+            "userdetails": serializer2.data
+        }
+
+        return Response(combined_data, status=status.HTTP_200_OK)
     
+        
     #First fetch the data using function
     """def get_object(self, pk):
         try:
